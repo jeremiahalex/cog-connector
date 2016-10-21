@@ -1,0 +1,21 @@
+{
+  "name": "cog-connector",
+  "version": "1.0.0",
+  "description": "Provides functionality for chaining together cogs.",
+  "scripts": {
+    "start": "node index.js",
+    "mongo": "mongod --dbpath=/data"
+  },
+  "engines": {
+    "node": "6.6.0"
+  },
+  "main": "index.js",
+  "author": "Jeremiah Alexander",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "dotenv": "^2.0.0",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.10"
+  }
+}
