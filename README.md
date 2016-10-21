@@ -24,19 +24,25 @@ In addition to this the file also contains a sequence of transforms that have be
   ]
 ```
 
-## Creating a Cog
+## Creating Cogs
 I've currently created two examples cogs. You can fork one to try and create your own if you like.
 - [reverse-string](https://github.com/jeremiahalex/cog-reverse-string)
 - [string-sum-int](https://github.com/jeremiahalex/cog-string-sum-int)
 
-## Creating a Pipe
-No UI yet, so launch postman and send a POST request with JSON data to */pipes*
+## Pipes
+The application for creating pipes of connected cogs lives here: https://cog-connector.herokuapp.com
+No UI yet, so you'll have to use postman or curl.
 
-The JSON should list a sequence of cogs to pipe together. Currently these are fully formed URLs but the intention is that they should be names, with cogs being registered with this App. That will allow cogs to be Tested and Approved.
+### Creating a Pipe
+Send a POST request with JSON data to */pipes*
 
-The result of a create action will be the id to access the created pipe
+The JSON should contain an array of cogs to pipe together. Currently these are fully formed URLs but the intention is that they should be names, with cogs being be pre-registered with this App. That will allow cogs to be Tested and Approved.
 
-For example...
+__This does however means that you can add new cogs and test now without approval__
+
+The result of a create action will be the pipe created include an _id_ property for using the pipe later
+
+*Example Request*
 ```json
   "cogs": [
     "https://cog-reverse-string.herokuapp.com/connect",
@@ -44,11 +50,21 @@ For example...
   ]
 ```
 
-## Run a Pipe
-To run a pipe, do a post request to */pipes/:id** using the id of your pipe and some starting data in the above format.
+*Example Response*
+```json
+  "cogs": [
+    "https://cog-reverse-string.herokuapp.com/connect",
+    "https://cog-reverse-string.herokuapp.com/connect"
+  ],
+  "_id": "580a04c50f8d942eaa6986b8"
+```
 
-Below is an example END consumer that I made. It could for example be a Dashboard App. That utilised one or more pipes.
+### Run a Pipe
+To run a pipe, do a post request to */pipes/:id** using the id of your pipe and some starting data in the same JSON format.
 
+Below is an example END consumer that I made. change the name param in the url to try
+
+https://cog-dashboard.herokuapp.com?name=jeremiah
 
 ## List all Pipes
 ## View a Pipe

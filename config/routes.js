@@ -49,7 +49,7 @@ router.post('/:id', (req, res) => {
       if (response.statusCode === 200) {
         return res.json(JSON.parse(body))
       }
-      return res.status(response.statusCode).json({err: err})
+      return res.status(response.statusCode).json({err: error})
     }))
   })
 })
