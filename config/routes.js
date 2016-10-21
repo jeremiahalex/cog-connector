@@ -1,17 +1,12 @@
 const router = require('express').Router()
 const collectionName = 'pipes'
-// we define a single post route called connect, which takes in a json file and returns a replacement
-//   // if we don't have the data we need then just return it as is
-//   if (!data || !data.props) {
-//     return res.json(data)
-//   }
-//
-//   // if we have props, apply this cog to the list of transforms
-//   if (!data.transforms) data.transforms = []
+const request = require('request');
+const ObjectID = require('mongodb').ObjectID;
 
 // LIST
 router.get('/', (req, res) => {
   req.app.get('db').collection(collectionName).find().toArray((err, results) => {
+    if (err) throw(err)
     res.json(results)
   })
 })
@@ -19,42 +14,55 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
   if (!req.body || !req.body.cogs) return res.status(422).json({err: 'no cogs data provided'})
 
+  // TODO. validation
   const newPipe = {
-    cogs: [req.body.cogs]
+    cogs: req.body.cogs
   }
-  req.app.get('db').collection(collectionName).save(newPipe, (err, result) => {
-    if (err) return res.status(404).json({err: err})
+  req.app.get('db').collection(collectionName).insertOne(newPipe, (err, result) => {
+    if (err) return res.status(422).json({err: err})
+    res.json(result.ops[0])
+  })
+})
 
-    res.json(result)
+// RUN the pipe - use a post request to a specific id as a means of calling it
+router.post('/:id', (req, res) => {
+  const data = req.body
+  if (!data || !data.props) {
+    return res.status(422).json({err: 'no props data provided'})
+  }
+
+  req.app.get('db').collection(collectionName).findOne({"_id": ObjectID(req.params.id)},(err, doc) => {
+    if (err) throw(err)
+
+    if (!doc) {
+      return res.status(404).json({err: 'Pipe not found'})
+    }
+    if (doc.cogs.length === 0) {
+      return res.status(422).json({err: 'no cogs in pipe'})
+    }
+    // process each cog - TODO. this looks messy and can probably be improved
+    var cogResponse = request.post({url: doc.cogs[0], json: data })
+    for (var i = 1; i < doc.cogs.length-1; i++) {
+      cogResponse = cogResponse.pipe(request.post(doc.cogs[i]))
+    }
+    cogResponse.pipe(request.post(doc.cogs[doc.cogs.length-1], (error, response, body) => {
+      if (response.statusCode === 200) {
+        return res.json(JSON.parse(body))
+      }
+      return res.status(response.statusCode).json({err: err})
+    }))
   })
 })
 
 // SHOW, UPDATE, DESTROY
 router.get('/:id', (req, res) => {
-  // db.peanut.find({
-  //   where: {id: req.params.id}
-  // }).then(function (foundPeanut) {
-  //   res.json(foundPeanut)
-  // })
+  res.json({'message': 'coming soon'})
 })
 router.patch('/:id', (req, res) => {
-  // var foundPeanut = peanuts[req.params.id]
-  // if (foundPeanut) {
-  //   if (req.body.name) foundPeanut.name = req.body.name
-  //   if (req.body.cost) foundPeanut.cost = req.body.cost
-  // }
-  // res.json(foundPeanut)
+  res.json({'message': 'coming soon'})
 })
 router.delete('/:id', (req, res) => {
-  // // remove the peanut from the object
-  // // delete peanuts[req.params.id]
-  // db.peanut.destroy({
-  //   where: { id: req.params.id }
-  // }).then(function () {
-  //   res.json({message: 'success'})
-  // })
-})
-router.post('/:id', (req, res) => {
+  res.json({'message': 'coming soon'})
 })
 
 module.exports = router

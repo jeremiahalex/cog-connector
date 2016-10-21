@@ -30,8 +30,7 @@ I've currently created two examples cogs. You can fork one to try and create you
 - [string-sum-int](https://github.com/jeremiahalex/cog-string-sum-int)
 
 ## Creating a Pipe
-No UI yet, so launch postman and send a POST request with JSON data to:
- LINK GOES HERE
+No UI yet, so launch postman and send a POST request with JSON data to */pipes*
 
 The JSON should list a sequence of cogs to pipe together. Currently these are fully formed URLs but the intention is that they should be names, with cogs being registered with this App. That will allow cogs to be Tested and Approved.
 
@@ -40,14 +39,19 @@ The result of a create action will be the id to access the created pipe
 For example...
 ```json
   "cogs": [
-    https://cog-reverse-string.herokuapp.com/connect,
-    https://cog-string-sum-int.herokuapp.com/connect
+    "https://cog-reverse-string.herokuapp.com/connect",
+    "https://cog-string-sum-int.herokuapp.com/connect"
   ]
 ```
 
+## Run a Pipe
+To run a pipe, do a post request to */pipes/:id** using the id of your pipe and some starting data in the above format.
+
+Below is an example END consumer that I made. It could for example be a Dashboard App. That utilised one or more pipes.
+
+
 ## List all Pipes
 ## View a Pipe
-## Run a Pipe
 ## Test a Pipe
 ## Update a Pipe
 ## Edit a Pipe
